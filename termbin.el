@@ -27,13 +27,27 @@
 
 ;;; Code:
 
+
+(defgroup yf/termbin nil
+  "Group for customizing termbin.el")
+
+(defcustom yf/termbin-host "termbin.com"
+  "Address for termbin.com"
+  :group 'yf/termbin)
+(defcustom yf/termbin-port 9999
+  "Port number for termbin.com"
+  :group 'yf/termbin)
+(defcustom yf/termbin-url-regexp "\\(https://termbin.com/[[:alnum:]]+\\)\n\0"
+  "Regular expression for the returned URL"
+  :group 'yf/termbin)
+
 (defun yf/termbin-region--buffer-has-valid-url (buf)
   "Check if BUF has a valid termbin.com URL, and return it"
   (save-excursion
     (set-buffer buf)
     (save-match-data
       (goto-char (point-min))
-      (and (looking-at "\\(https://termbin.com/[[:alnum:]]+\\)\n\0")
+      (and (looking-at yf/termbin-url-regexp)
            (match-string 1)))))
 
 (defun yf/termbin-region--sentinel (proc what callback)
@@ -50,11 +64,11 @@
 (defun yf/termbin-region-async (beg end callback)
   "Send the region to termbin.com and feed the resulting url to CALLBACK"
   (let* ((procname "*termbin*")
-         (temp-buffer (generate-new-buffer " *temp*for*termbin*"))
+         (temp-buffer (generate-new-buffer " *temp for termbin*"))
          (proc (make-network-process :name procname
                                      :buffer temp-buffer
-                                     :host "termbin.com"
-                                     :service 9999
+                                     :host yf/termbin-host
+                                     :service yf/termbin-port
                                      ;; alternatively we could use a filter.
                                      ;; a filter would trigger before the connection is closed
                                      ;; but there is a (minuscule) risk that it triggers before we have the whole url
