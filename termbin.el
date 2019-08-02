@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 1. Selection region
+;; 1. Select region
 ;; 2. M-x yf/termbin-region
 ;; 3. ??? (magic happens)
 ;; 4. Yank the url with C-y
